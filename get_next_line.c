@@ -5,105 +5,78 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fnovais- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/17 13:25:36 by fnovais-          #+#    #+#             */
-/*   Updated: 2022/11/22 15:45:16 by fnovais-         ###   ########.fr       */
+/*   Created: 2022/11/24 16:25:53 by fnovais-          #+#    #+#             */
+/*   Updated: 2022/11/24 23:57:35 by fnovais-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*new_l(char *buff)
+char	*next_line(char *buff)
 {
 	int		i;
 	int		j;
-	char	*str;
-
-	i = 0;
-	j = 0;
-	while (buff[i] != '\0')
-	{
-		if (buff[i] == '\n')
-		{
-			while (j < i)
-			{
-				str[j] = buff[j];
-				j++;
-			}
-			return (str);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
-char	*where(char *buff)
-{
-	int		i;
-	int		j;
-	char	*str;
+	char	*next;
 
 	i = 0;
 	if (!buff)
 		return (NULL);
 	while (buff && buff[i] != '\n')
 		i++;
-	str = malloc(sizeof(char) * ((ft_strlen(buff) - i) + 1));
-	if (!str)
+	next = malloc(sizeof(char) * ((ft_strlen(buff) - i) + 1));
+	if (!next)
 		return (NULL);
 	i++;
 	j = 0;
 	while (buff[i])
 	{
-		str[j++] = buff[i++];
+		next[j++] = buff[i++];
 	}
-	str[j] = '\0';
+	next[j] = '\0';
 	free(buff);
-	return (str);
+	return (next);
 }
 
-char	*ft_join(char const *s1, char const *s2)
+char	*read_line(int fd, char *buff)
 {
-	char	*new;
-	size_t	size;
+	int		reading;
+	char	*str;
 
-	if (!s1 || !s2)
-		return ("aqui");
-	size = (ft_strlen(s1) + ft_strlen(s2) + 1);
-	new = malloc(sizeof(char) * size);
-	if (!new)
+	str = malloc(sizeof(char *) * BUFFER_SIZE + 1);
+	if (!str)
 		return (NULL);
-	ft_memcpy((void *)new, (const void *)s1, size);
-	ft_strlcat(new, s2, size);
-	return (new);
+	reading = 1;
+	while (!ft_strchr(buff, '\n') && reading != 0)
+	{
+		reading = read(fd, str, BUFFER_SIZE);
+		if (reading == -1)
+		{
+			free(str);
+			return (NULL);
+		}
+		str[reading] = '\0';
+		buff = ft_join(buff, str);
+	}
+	free(str);
+	return (buff);
 }
 
 char	*get_next_line(int fd)
 {
-	int			reading;
-	char		*join_buf;
-	static char	*buf1;
+	char		*line;
+	static char	*buffer;
 
-//	join_buf = malloc(sizeof(char) * 1000);
-	buf1 = malloc(sizeof(char) * BUFFER_SIZE);
-	reading = read(fd, buf1, BUFFER_SIZE);
-	while (reading > 0)
-	{
-		if (!(new_l(buf1)))
-		{
-			join_buf = ft_join((const char *)join_buf, (const char *)(buf1));
-			reading = read(fd, buf1, BUFFER_SIZE);
-		}
-		else
-		{
-			join_buf = ft_join((const char *)join_buf, \
-			(const char *)(new_l(buf1)));
-			buf1 = where(buf1);
-			return (join_buf);
-		}
-	}
-	return (join_buf);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	buffer = read_line(fd, buffer);
+	if (!buffer)
+		return (NULL);
+	line = malloc(sizeof(char *) * ft_strlen(buffer));
+	line = ft_cpy((char *)buffer);
+	buffer = next_line(buffer);
+	return (line);
 }
-
+/*
 int	main(void)
 {
 	int		fd;
@@ -118,6 +91,11 @@ int	main(void)
 	printf("%s\n", s2);
 	s2 = get_next_line(fd);
 	printf("%s\n", s2);
+	s2 = get_next_line(fd);
+	printf("%s\n", s2);
+	s2 = get_next_line(fd);
+	printf("%s\n", s2);
 	close(fd);
 	return (0);
 }
+*/
