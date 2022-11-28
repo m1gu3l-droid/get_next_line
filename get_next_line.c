@@ -6,7 +6,7 @@
 /*   By: fnovais- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 16:25:53 by fnovais-          #+#    #+#             */
-/*   Updated: 2022/11/24 23:57:35 by fnovais-         ###   ########.fr       */
+/*   Updated: 2022/11/28 18:07:01 by fnovais-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,20 @@ char	*next_line(char *buff)
 	char	*next;
 
 	i = 0;
-	if (!buff)
-		return (NULL);
-	while (buff && buff[i] != '\n')
+	while (buff[i] && buff[i] != '\n')
 		i++;
-	next = malloc(sizeof(char) * ((ft_strlen(buff) - i) + 1));
+	if (!buff[i])
+	{
+		free(buff);
+		return (NULL);
+	}
+	next = (char *)malloc(sizeof(char) * (ft_strlen(buff) - i + 1));
 	if (!next)
 		return (NULL);
 	i++;
 	j = 0;
 	while (buff[i])
-	{
 		next[j++] = buff[i++];
-	}
 	next[j] = '\0';
 	free(buff);
 	return (next);
@@ -42,7 +43,7 @@ char	*read_line(int fd, char *buff)
 	int		reading;
 	char	*str;
 
-	str = malloc(sizeof(char *) * BUFFER_SIZE + 1);
+	str = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!str)
 		return (NULL);
 	reading = 1;
@@ -71,7 +72,7 @@ char	*get_next_line(int fd)
 	buffer = read_line(fd, buffer);
 	if (!buffer)
 		return (NULL);
-	line = malloc(sizeof(char *) * ft_strlen(buffer));
+	line = (char *)malloc(sizeof(char) * ft_strlen(buffer) + 1);
 	line = ft_cpy((char *)buffer);
 	buffer = next_line(buffer);
 	return (line);
@@ -82,7 +83,7 @@ int	main(void)
 	int		fd;
 	char	*s2;
 
-	fd = open("criacao.txt", O_RDONLY);
+	fd = open("42_with_nl", O_RDONLY);
 	if (fd == -1)
 		printf("Error\n");
 	s2 = get_next_line(fd);
