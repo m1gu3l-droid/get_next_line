@@ -10,34 +10,34 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-char	*ft_cpy(char *dst)
+char	*ft_cpy(char *s1)
 {
-	int	d;
-	char	*str;
+	int		i;
+	char	*line_cpy;
 
-	d = 0;
-	if (!dst[d])
+	i = 0;
+	if (!s1[i])
 		return (NULL);
-	while (dst[d] && dst[d] != '\n')
-		d++;
-	str = (char *)malloc((d + 2) * sizeof(char));
-	if (!str)
+	while (s1[i] && s1[i] != '\n')
+		i++;
+	line_cpy = (char *)malloc((i + 2) * sizeof(char));
+	if (!line_cpy)
 		return (NULL);
-	d = 0;
-	while (dst[d] && dst[d] != '\n')
+	i = 0;
+	while (s1[i] && s1[i] != '\n')
 	{
-		str[d] = dst[d];
-		d++;
+		line_cpy[i] = s1[i];
+		i++;
 	}
-	if (dst[d] == '\n')
+	if (s1[i] == '\n')
 	{
-		str[d] = dst[d];
-		d++;
+		line_cpy[i] = s1[i];
+		i++;
 	}
-	str[d] = '\0';
-	return (str);
+	line_cpy[i] = '\0';
+	return (line_cpy);
 }
 
 char	*ft_strchr(const char	*s, int c)
@@ -60,7 +60,7 @@ char	*ft_strchr(const char	*s, int c)
 
 char	*ft_join(char *s1, char *s2)
 {
-	char	*new;
+	char	*new_s1;
 	size_t	i;
 	size_t	j;
 
@@ -71,19 +71,19 @@ char	*ft_join(char *s1, char *s2)
 	}
 	if (!s1 || !s2)
 		return (NULL);
-	new = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (new == NULL)
+	new_s1 = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (new_s1 == NULL)
 		return (NULL);
 	i = -1;
 	j = 0;
 	if (s1)
 		while (s1[++i] != '\0')
-			new[i] = s1[i];
+			new_s1[i] = s1[i];
 	while (s2[j] != '\0')
-		new[i++] = s2[j++];
-	new[ft_strlen(s1) + ft_strlen(s2)] = '\0';
+		new_s1[i++] = s2[j++];
+	new_s1[ft_strlen(s1) + ft_strlen(s2)] = '\0';
 	free(s1);
-	return (new);
+	return (new_s1);
 }
 
 size_t	ft_strlen(const char *s)
